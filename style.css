@@ -1,0 +1,10 @@
+.map td {
+    border: 1px solid white;
+    width: 6px;
+    height: 6px;
+    cursor: pointer;
+}
+
+.btn{
+    min-width: 120px;
+}
