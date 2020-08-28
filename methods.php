@@ -1,6 +1,7 @@
 <?php
 
 require_once 'private/config.inc';
+$start = microtime(true);
 
 if (isset($_GET["action"]) && isset($_GET["x"]) && isset($_GET["y"])){
     $action = $_GET["action"];
@@ -68,7 +69,7 @@ if (isset($_GET["action"]) && isset($_GET["x"]) && isset($_GET["y"])){
         if ($_GET["action"] == "find" && isset($_GET["k"]) && isset($_GET["m"])){            
             $k = $_GET["k"];
             $rad = $_GET["m"];
-            $sql = "SELECT *, SQRT(POW(x - $x, 2) + POW(y - $y, 2)) AS distance FROM `dots` WHERE SQRT(POW(x - $x, 2) + POW(y - $y, 2)) < $rad AND NOT x = $x AND NOT y = $y ORDER BY distance LIMIT $k";
+            $sql = "SELECT *, SQRT(POW(x - $x, 2) + POW(y - $y, 2)) AS distance FROM `dots` WHERE SQRT(POW(x - $x, 2) + POW(y - $y, 2)) < $rad AND NOT (x = $x AND y = $y) ORDER BY distance LIMIT $k";
             $result = $db->query($sql);
             while($row = $result->fetch_array(MYSQLI_ASSOC)) {
                 $data["dots"][] = $row;
@@ -76,6 +77,8 @@ if (isset($_GET["action"]) && isset($_GET["x"]) && isset($_GET["y"])){
         }
 
         header('Content-Type: application/json');
+        $finish = microtime(true);
+        $data["script_time"] = $finish - $start;
         echo json_encode($data);
     }
     else{

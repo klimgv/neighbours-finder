@@ -57,13 +57,22 @@
                 echo "<div class='row'>
                         <div class='col-sm-8'>
                             <table class='m-auto map'>";
+                       
+                $sql = "SELECT * FROM `dots` WHERE (`x` BETWEEN ".($x0-50)." AND ".($x0 + 50).") AND (`y` BETWEEN ".($y0-50)." AND ".($y0 + 50).")";
+                $result = $db->query($sql);
+                $dots0 = array();
+                while($row = $result->fetch_array(MYSQLI_ASSOC)) {
+                    $dots0[] = $row;
+                }
 
                 for ($y=$y0-50; $y <= $y0 + 50; $y++) { 
                     echo "<tr>";
-                    for ($x=$x0-50; $x <= $x0 + 50; $x++) {                         
-                        $sql = "SELECT * FROM `dots` WHERE `x` = $x AND `y` = $y";
-                        $result = $db->query($sql);
-                        if ($result->num_rows > 0) {     
+                    for ($x=$x0-50; $x <= $x0 + 50; $x++) { 
+                        $dot_exist = 0; 
+                        foreach ($dots0 as $dot) {
+                            if ($dot["x"] == $x && $dot["y"] == $y) $dot_exist = 1; 
+                        }
+                        if ($dot_exist != 0) {     
                             if (isset($obj->dots)){            
                                 $found_x = array_search($x, array_column($dots, 'x'));
                                 $found_y = array_search($y, array_column($dots, 'y'));
@@ -77,11 +86,9 @@
                             else{
                                 $dot_type = 'bg-warning';
                             }
-                            $dot_exist = 1;
                         }
                         else{
                             $dot_type = 'bg-secondary';
-                            $dot_exist = 0;
                         }
                         if ($y == $y0 && $x == $x0) $dot_type = 'bg-danger';
                         echo "<td tabindex='0' class='$dot_type' data-container='body' data-toggle='popover' data-trigger='focus' data-placement='top' data-content='($x, $y)' data-x='$x' data-y='$y' data-exist='$dot_exist'></td>";
